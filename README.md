@@ -29,7 +29,7 @@ Repo used to teach docker Basics
 
 - much smaller RAM usage - no operating system overhead per container
 - Startup time is measured in ms and seconds, VMs in minutes
-- CPU overhead is negligable, no VM overhead, no operating system overhead
+- CPU and Memory overhead is negligable, VMs can chomp 30% of compute resource
 
 #### Container commands
 
