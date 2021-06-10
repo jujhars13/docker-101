@@ -10,10 +10,19 @@ services:
     environment:
       REDIS_PORT: "6379"
       REDIS_HOST: "redis"
+      MONGO_HOST: "mongo"
       yourName: "Jujhar"
       port: "8080"
+    depends_on:
+      - "redis"
+      - "mongo"
 
   redis:
     image: redis:6.0-alpine
     expose:
       - "6379/tcp"
+
+  mongo:
+    image: mongo:latest
+    expose:
+      - "27017/tcp"
