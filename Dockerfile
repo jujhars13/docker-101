@@ -1,5 +1,9 @@
-FROM node:16
+FROM node:16-buster-slim
 
-ADD ./examples/index.js /app/index.js
+ADD ./examples/js/database /app
 
-CMD [ "node", "/app/index.js" ]
+WORKDIR /app
+
+RUN npm install
+
+CMD [ "node", "database.js" ]

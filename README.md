@@ -16,7 +16,10 @@ Repo used to teach docker Basics
 - [ ] push your container to docker hub
 - [ ] Docker pull each others containers
 - [ ] create container that needs a database
+  - [ ] get mongo or mysql, redis
+  - [ ] hook up your app
 - [ ] docker-compose to co-ordinate multiple containers
+- [ ] Push to GCR or ECR
 
 ### Notes
 
