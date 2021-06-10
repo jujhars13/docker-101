@@ -12,6 +12,7 @@ Repo used to teach docker Basics
 
 ## Outcomes 201
 
+- [ ] quick Refresher
 - [ ] push your container to docker hub
 - [ ] Docker pull each others containers
 - [ ] create container that needs a database
