@@ -3,16 +3,28 @@
  * Nodejs > 16
  */
 const redis = require("async-redis");
-const MongoClient = require("mongodb").MongoClient;
+const { MongoClient } = require("mongodb");
 
 // Mongo Connection example
-var url = `mongodb+srv://${process.env.MONGO_HOST}:27017/PageCount`;
-
-const db = MongoClient.connect(url, function (err, db) {
-  if (err) throw err;
-  console.log(`Database created! at ${process.env.MONGO_HOST}:27017`);
-  db.close();
+const url = `mongodb+srv://${process.env.MONGO_HOST}:27017/`;
+const Mongodb = new MongoClient(url, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
+
+async function connectMongodb() {
+  try {
+    // Connect to the MongoDB
+    const connect = await Mongodb.connect();
+    console.log("Mongodb connected successfully", connect.isConnected());
+  } catch (e) {
+    console.error(e);
+  } finally {
+    await Mongodb.close();
+  }
+}
+
+connectMongodb().catch(console.error);
 
 // Redis connection example
 const client = redis.createClient(
@@ -53,18 +65,15 @@ const requestHandler = (request, response) => {
   return client
     .get("pageVisits")
     .then((pageCount) => {
-      // send output as json
       //save to mongodb
-      const obj = {
-        count: pageCount,
-      };
-      db.collection("count").insertOne(obj, function (err, res) {
-        if (err) throw err;
-        console.log("what is the result? ", res);
-        console.log("Page count saved? " + res.insertedCount);
-        db.close();
-      });
-      console.log(pageCount);
+      const dbName = Mongodb.db("PageVisits");
+      // should create a new collection
+      const createCollection = await dbName.createCollection("PageCount");
+      //save to mongodb
+      const saveCount = await createCollection.insertOne({ count: pageCount });
+      // should print 1 on successful insert
+      console.dir(saveCount.insertedCount);
+      // send output as json
       out.pageCounts = pageCount;
       response.setHeader("Content-Type", "application/json");
       response.statusCode = 200;
