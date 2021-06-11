@@ -3,6 +3,18 @@
  * Nodejs > 16
  */
 const redis = require("async-redis");
+const MongoClient = require("mongodb").MongoClient;
+
+// Mongo Connection example
+var url = `mongodb+srv://${process.env.MONGO_HOST}:27017/PageCount`;
+
+const db = MongoClient.connect(url, function (err, db) {
+  if (err) throw err;
+  console.log(`Database created! at ${process.env.MONGO_HOST}:27017`);
+  db.close();
+});
+
+// Redis connection example
 const client = redis.createClient(
   process.env?.REDIS_PORT ? process.env.REDIS_PORT : 6379,
   process.env?.REDIS_HOST ? process.env.REDIS_HOST : "localhost"
@@ -27,10 +39,10 @@ const requestHandler = (request, response) => {
     out.message = "ok";
     out.status = 200;
   }
-    
+
   // log access to redis
   client.incr("pageVisits");
-    
+
   // "log" server access to stdout
   console.log(
     `${new Date()} [${request?.connection?.remoteAddress}]-[${
@@ -42,6 +54,17 @@ const requestHandler = (request, response) => {
     .get("pageVisits")
     .then((pageCount) => {
       // send output as json
+      //save to mongodb
+      const obj = {
+        count: pageCount,
+      };
+      db.collection("count").insertOne(obj, function (err, res) {
+        if (err) throw err;
+        console.log("what is the result? ", res);
+        console.log("Page count saved? " + res.insertedCount);
+        db.close();
+      });
+      console.log(pageCount);
       out.pageCounts = pageCount;
       response.setHeader("Content-Type", "application/json");
       response.statusCode = 200;
